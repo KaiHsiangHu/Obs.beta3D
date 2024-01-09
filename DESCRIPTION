@@ -1,0 +1,26 @@
+Package: Obs.beta3D
+Type: Package
+Title: Beta diversity for three dimensions
+Version: 1.0.1
+Author: Anne Chao and Kai-Hsiang Hu
+Maintainer: K. S. Hu <river19951224@gmail.com>
+Description: Obs.beta3D provides computing beta diversity for multiple assemblages.
+Depends: R (>= 4.0)
+Imports: tidyverse,
+         magrittr,
+         tidyr,
+         ggplot2,
+         abind,
+         ape,
+         ade4,
+         phytools,
+         phyclust,
+         tidytree,
+         colorRamps,
+         future.apply,
+         iNEXT.3D
+Remotes: AnneChao/iNEXT.3D
+Encoding: UTF-8
+BugReports: https://github.com/KaiHsiangHu/Obs.beta3D/issues
+LazyData: true
+RoxygenNote: 7.2.3
