@@ -20,7 +20,8 @@ a figure for gamma, alpha, and Beta diversity, or a figure for four dissimilarit
 \examples{
 ## Taxonomic diversity for abundance data
 data(beetle_abu)
-output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 10)
+output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', 
+                    nboot = 10)
 
 ggObsbeta3D(output1, type = 'B')
 ggObsbeta3D(output1, type = 'D')
@@ -29,7 +30,8 @@ ggObsbeta3D(output1, type = 'D')
 ## Phylogenetic Hill numbers for abundance data
 data(beetle_abu)
 data(beetle_tree)
-output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 10, conf = 0.95, 
+output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95, 
                     PDtree = beetle_tree, PDreftime = NULL, PDtype = 'meanPD')
 
 ggObsbeta3D(output2, type = 'B')
@@ -39,7 +41,8 @@ ggObsbeta3D(output2, type = 'D')
 ## Functional diversity for abundance data under single threshold
 data(beetle_abu)
 data(beetle_distM)
-output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
+output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 
 ggObsbeta3D(output3, type = 'B')
@@ -49,7 +52,8 @@ ggObsbeta3D(output3, type = 'D')
 ## Functional diversity for abundance data with thresholds integrating from 0 to 1
 data(beetle_abu)
 data(beetle_distM)
-output4 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
+output4 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'AUC', FDcut_number = 30)
 
 ggObsbeta3D(output4, type = 'B')
@@ -58,7 +62,8 @@ ggObsbeta3D(output4, type = 'D')
 
 ## Taxonomic diversity for incidence data
 data(beetle_inc)
-output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 10, conf = 0.95)
+output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95)
 
 ggObsbeta3D(output5, type = 'B')
 ggObsbeta3D(output5, type = 'D')
@@ -67,7 +72,8 @@ ggObsbeta3D(output5, type = 'D')
 ## Phylogenetic Hill numbers for incidence data
 data(beetle_inc)
 data(beetle_tree)
-output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
+output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95, 
                     PDtree = beetle_tree, PDreftime = NULL)
 
 ggObsbeta3D(output6, type = 'B')
@@ -77,7 +83,8 @@ ggObsbeta3D(output6, type = 'D')
 ## Functional diversity for incidence data under single threshold
 data(beetle_inc)
 data(beetle_distM)
-output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
+output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 
 ggObsbeta3D(output7, type = 'B')
@@ -87,7 +94,8 @@ ggObsbeta3D(output7, type = 'D')
 ## Functional diversity for incidence data with thresholds integrating from 0 to 1
 data(beetle_inc)
 data(beetle_distM)
-output8 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
+output8 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'AUC', FDcut_number = 30)
 
 ggObsbeta3D(output8, type = 'B')

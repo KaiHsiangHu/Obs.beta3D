@@ -73,14 +73,16 @@ Return a list of several data frames including three diversity (gamma, alpha, an
 \examples{
 ## Taxonomic diversity for abundance data
 data(beetle_abu)
-output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 10, conf = 0.95)
+output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95)
 output1
 
 
 ## Phylogenetic diversity for abundance data
 data(beetle_abu)
 data(beetle_tree)
-output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 10, conf = 0.95,
+output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95,
                     PDtree = beetle_tree, PDreftime = NULL)
 output2
 
@@ -88,7 +90,8 @@ output2
 ## Functional diversity for abundance data under single threshold
 data(beetle_abu)
 data(beetle_distM)
-output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
+output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 output3
 
@@ -96,21 +99,24 @@ output3
 ## Functional diversity for abundance data with thresholds integrating from 0 to 1
 data(beetle_abu)
 data(beetle_distM)
-output4 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
+output4 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'AUC', FDcut_number = 30)
 output4
 
 
 ## Taxonomic diversity for incidence data
 data(beetle_inc)
-output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 10, conf = 0.95)
+output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95)
 output5
 
 
 ## Phylogenetic diversity for incidence data
 data(beetle_inc)
 data(beetle_tree)
-output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
+output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95, 
                     PDtree = beetle_tree, PDreftime = NULL, PDtype = 'PD')
 output6
 
@@ -118,7 +124,8 @@ output6
 ## Functional diversity for incidence data under single threshold
 data(beetle_inc)
 data(beetle_distM)
-output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
+output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 output7
 
@@ -126,7 +133,8 @@ output7
 ## Functional diversity for incidence data with thresholds integrating from 0 to 1
 data(beetle_inc)
 data(beetle_distM)
-output8 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
+output8 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', 
+                    nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'AUC', FDcut_number = 30)
 output8
 

@@ -16,19 +16,18 @@ Authors@R:
 Description: Obs.beta3D provides functions to compute beta diversity for multiple assemblages.
 License: GPL (>= 3)
 Depends: R (>= 4.0)
-Imports: tidyverse,
+Imports: stats,
          magrittr,
-         tidyr,
          ggplot2,
          abind,
-         ape,
-         ade4,
-         phytools,
-         phyclust,
-         tidytree,
-         colorRamps,
+         iNEXT.3D,
          future.apply,
-         iNEXT.3D
+         tibble,
+         dplyr,
+         tidytree,
+         tidyr,
+         phyclust,
+         ape
 Encoding: UTF-8
 BugReports: https://github.com/KaiHsiangHu/Obs.beta3D/issues
 LazyData: true
