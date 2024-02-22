@@ -5,20 +5,20 @@
 #' @param data (a) For \code{datatype = "abundance"}, species abundance data for a single dataset can be input as a \code{matrix/data.frame} (species-by-assemblage); data for multiple datasets can be input as a \code{list} of \code{matrices/data.frames}, with each matrix representing a species-by-assemblage abundance matrix for one of the datasets.\cr
 #' (b) For \code{datatype = "incidence_raw"}, data for a single dataset with N assemblages can be input as a \code{list} of \code{matrices/data.frames}, with each matrix representing a species-by-sampling-unit incidence matrix for one of the assemblages; data for multiple datasets can be input as multiple lists.
 #' @param diversity selection of diversity type: \code{'TD'} = Taxonomic diversity, \code{'PD'} = Phylogenetic diversity, and \code{'FD'} = Functional diversity.
-#' @param q a numerical vector specifying the diversity orders. Default is \code{q = c(0, 1, 2)}.
-#' @param datatype data type of input data: individual-based abundance data (\code{datatype = "abundance"}) or species by sampling-units incidence matrix (\code{datatype = "incidence_raw"}) with all entries being \code{0} (non-detection) or \code{1} (detection).
-#' @param nboot a positive integer specifying the number of bootstrap replications when assessing sampling uncertainty and constructing confidence intervals. Bootstrap replications are generally time consuming. Enter \code{0} to skip the bootstrap procedures. Default is \code{nboot = 10}. If more accurate results are required, set \code{nboot = 100} (or \code{200}).
-#' @param conf a positive number < 1 specifying the level of confidence interval. Default is \code{conf = 0.95}.
-#' @param PDtree (required argument for \code{diversity = "PD"}), a phylogenetic tree in Newick format for all observed species in the pooled dataset. 
-#' @param PDreftime (argument for \code{diversity = "PD"}), a numerical value specifying reference time for PD. Default is \code{PDreftime = NULL} (i.e., the age of the root of PDtree).  
-#' @param PDtype (argument for \code{diversity = "PD"}), select PD type: \code{PDtype = "PD"} (effective total branch length) or \code{PDtype = "meanPD"} (effective number of equally divergent lineages). Default is \code{PDtype = "meanPD"}, where \code{meanPD = PD/tree depth}.
+#' @param q a numerical vector specifying the diversity orders. Default is \code{c(0, 1, 2)}.
+#' @param datatype data type of input data: individual-based abundance data (\code{datatype = "abundance"}) or species by sampling-units incidence/occurrence matrix (\code{datatype = "incidence_raw"}) with all entries being 0 (non-detection) or 1 (detection).
+#' @param nboot a positive integer specifying the number of bootstrap replications when assessing sampling uncertainty and constructing confidence intervals. Bootstrap replications are generally time consuming. Set \code{nboot = 0} to skip the bootstrap procedures. Default is \code{nboot = 10}. If more accurate results are required, set \code{nboot = 100} (or \code{nboot = 200}).
+#' @param conf a positive number < 1 specifying the level of confidence interval. Default is 0.95.
+#' @param PDtree (required argument for \code{diversity = "PD"}), a phylogenetic tree in Newick format for all observed species in the pooled assemblage. 
+#' @param PDreftime (argument only for \code{diversity = "PD"}), a numerical value specifying reference time for PD. Default is \code{PDreftime = NULL} (i.e., the age of the root of \code{PDtree}).  
+#' @param PDtype (argument only for \code{diversity = "PD"}), select PD type: \code{PDtype = "PD"} (effective total branch length) or \code{PDtype = "meanPD"} (effective number of equally divergent lineages). Default is \code{PDtype = "meanPD"}, where \code{meanPD = PD/tree depth}.
 #' @param FDdistM (required argument for \code{diversity = "FD"}), a species pairwise distance matrix for all species in the pooled dataset. 
-#' @param FDtype (argument for \code{diversity = "FD"}), select FD type: \code{FDtype = "tau_value"} for FD under a specified threshold value, or \code{FDtype = "AUC"} (area under the curve of tau-profile) for an overall FD which integrates all threshold values between zero and one. Default is \code{FDtype = "AUC"}.  
-#' @param FDtau (argument for \code{diversity = "FD"} and \code{FDtype = "tau_value"}), a numerical value between 0 and
+#' @param FDtype (argument only for \code{diversity = "FD"}), select FD type: \code{FDtype = "tau_value"} for FD under a specified threshold value, or \code{FDtype = "AUC"} (area under the curve of tau-profile) for an overall FD which integrates all threshold values between zero and one. Default is \code{FDtype = "AUC"}.  
+#' @param FDtau (argument only for \code{diversity = "FD"} and \code{FDtype = "tau_value"}), a numerical value between 0 and
 #'  1 specifying the tau value (threshold level) that will be used to compute FD. If \code{FDtype = NULL} (default), 
 #'  then threshold level is set to be the mean distance between any two individuals randomly selected from the pooled 
 #'  dataset (i.e., quadratic entropy). 
-#' @param FDcut_number (argument for \code{diversity = "FD"} and \code{FDtype = "AUC"}), a numeric number to cut [0, 1] interval into equal-spaced sub-intervals to obtain the AUC value by integrating the tau-profile. Equivalently, the number of tau values that will be considered to compute the integrated AUC value. Default is \code{FDcut_number = 30}. A larger value can be set to obtain more accurate AUC value.
+#' @param FDcut_number (argument only for \code{diversity = "FD"} and \code{FDtype = "AUC"}), a numeric number to cut [0, 1] interval into equal-spaced sub-intervals to obtain the AUC value by integrating the tau-profile. Equivalently, the number of tau values that will be considered to compute the integrated AUC value. Default is \code{FDcut_number = 30}. A larger value can be set to obtain more accurate AUC value.
 #' 
 #' @import tidyverse
 #' @import magrittr
@@ -42,25 +42,27 @@
 #'  \item{Dataset}{the name of dataset.}
 #'  \item{Order.q}{the diversity order of q.} 
 #'  \item{Size}{the sample size.}
-#'  \item{Value}{the gamma, alpha, beta diversity and dissimilarity value.}
+#'  \item{Value}{the observed gamma, alpha, beta diversity and dissimilarity value.}
 #'  \item{s.e.}{standard error of standardized estimate.}
 #'  \item{LCL, UCL}{the bootstrap lower and upper confidence limits for the diversity/dissimilarity with a default significance level of 0.95.}
 #'  \item{Diversity}{'TD' = 'Taxonomic diversity', 'PD' = 'Phylogenetic diversity', 'meanPD' = 'Mean phylogenetic diversity', 'FD_tau' = 'Functional diversity (given tau)', 'FD_AUC' = 'Functional diversity (AUC)'}
 #'  \item{Type}{gamma, alpha, beta diversity or dissimilarity measures.}  
+#'  \item{Reftime}{the reference time for PD.}
+#'  \item{Tau}{the threshold of functional distinctiveness between any two species for FD (under \code{FDtype = "tau_value"}).}
 #'  
 #'  
 #' 
 #' @examples
 #' ## Taxonomic diversity for abundance data
 #' data(beetle_abu)
-#' output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 20, conf = 0.95)
+#' output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 10, conf = 0.95)
 #' output1
 #' 
 #' 
 #' ## Phylogenetic diversity for abundance data
 #' data(beetle_abu)
 #' data(beetle_tree)
-#' output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 20, conf = 0.95,
+#' output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 10, conf = 0.95,
 #'                     PDtree = beetle_tree, PDreftime = NULL)
 #' output2
 #' 
@@ -68,7 +70,7 @@
 #' ## Functional diversity for abundance data under single threshold
 #' data(beetle_abu)
 #' data(beetle_distM)
-#' output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 20, conf = 0.95, 
+#' output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
 #'                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 #' output3
 #' 
@@ -83,14 +85,14 @@
 #' 
 #' ## Taxonomic diversity for incidence data
 #' data(beetle_inc)
-#' output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 20, conf = 0.95)
+#' output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 10, conf = 0.95)
 #' output5
 #' 
 #' 
 #' ## Phylogenetic diversity for incidence data
 #' data(beetle_inc)
 #' data(beetle_tree)
-#' output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 20, conf = 0.95, 
+#' output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
 #'                     PDtree = beetle_tree, PDreftime = NULL, PDtype = 'PD')
 #' output6
 #' 
@@ -98,7 +100,7 @@
 #' ## Functional diversity for incidence data under single threshold
 #' data(beetle_inc)
 #' data(beetle_distM)
-#' output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 20, conf = 0.95, 
+#' output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
 #'                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 #' output7
 #' 
@@ -163,7 +165,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
     
     if ( inherits(data, "data.frame") | inherits(data, "matrix") ) data = list(Dataset_1 = data)
     
-    if (class(data) == "list"){
+    if ( inherits(data, "list") ){
       
       if (is.null(names(data))) dataset_names = paste0("Dataset_", 1:length(data)) else dataset_names = names(data)
       Ns = sapply(data, ncol)
@@ -175,11 +177,86 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
   
   if (datatype == 'incidence_raw') {
     
+    if (!inherits(data, "list"))
+      stop("Invalid data format for incidence raw data. Please refer to example of iNEXTbeta3D.", call. = FALSE)
+    
+    if ( inherits(data, "list") & (inherits(data[[1]], "data.frame") | inherits(data[[1]], "matrix")) ) data = list(Dataset_1 = data)
+    
+    if (! ( inherits(data[[1]][[1]], "data.frame") | inherits(data[[1]][[1]], "matrix") ) )
+      stop("Invalid data format for incidence raw data. Please refer to example of iNEXTbeta3D.", call. = FALSE)
+    
+    if ( sum( sapply(1:length(data), function(i) ( length(unique(sapply(data[[i]], nrow))) != 1 | 
+                                                   length(unique(sapply(data[[i]], ncol))) != 1 ) ) ) > 0 )
+      stop("Number of species (row) or sampling units (column) should be the same within each dataset. Please check you data or refer to example of iNEXTbeta3D.", call. = FALSE)
+    
+    data = lapply(data, function(x) {
+      
+      if (is.null(rownames(x[[1]]))) tmp = x else {
+        
+        nT = ncol(x[[1]])
+        if (nT <= 3) stop("Number of sampling units of some datasets is too less. Please add more sampling units data.", call. = FALSE)
+        
+        tmp = lapply(x, function(i) data.frame(i) %>% rownames_to_column(var = "Species"))
+        
+        tmp1 = tmp[[1]]
+        for (i in 2:length(tmp)) {
+          tmp1 = full_join(tmp1, tmp[[i]], by = "Species")
+        }
+        tmp1 = tmp1 %>% column_to_rownames(var = "Species")
+        
+        if (nrow(tmp1) != nrow(x[[1]]))
+          stop("Species names (rownames) should be matched within each dataset. Please check you data or refer to example of iNEXTbeta3D.", call. = FALSE)
+        
+        if (sum(!as.matrix(tmp1) %in% c(0,1)) > 0)
+          stop("The data for datatype = 'incidence_raw' can only contain values zero (undetected) or one (detected). Please transform values to zero or one.", call. = FALSE)
+        
+        tmp = lapply(1:length(tmp), function(i) tmp1[, ((i-1)*nT+1):(i*nT)])
+        names(tmp) = if (is.null(data)) paste0("Assemblage_", 1:length(data)) else names(x)
+      }
+      
+      return(tmp)
+    })
+    
     if (is.null(names(data))) dataset_names = paste0("Dataset_", 1:length(data)) else dataset_names = names(data)
     Ns = sapply(data, length)
     data_list = data
+  }
+  
+  
+  if (datatype == 'abundance') {
+    
+    pool.name <- lapply(data_list, function(x) rownames(x)) %>% unlist %>% unique
+    
+  } else if (datatype == 'incidence_raw') {
+    
+    pool.name <- lapply(data_list, function(x) lapply(x, function(y) rownames(y))) %>% unlist %>% unique
     
   }
+  
+  if (diversity == "PD") {
+    
+    if (sum(c(duplicated(PDtree$tip.label), duplicated(PDtree$node.label[PDtree$node.label!=""])))>0)
+      stop("The phylo tree should not contains duplicated tip or node labels, please remove them.", call. = FALSE)
+    
+    if ( is.null(pool.name) )
+      stop("Row names of data must be the species names that match tip names in tree and thus can not be empty.", call. = FALSE)
+    
+    if (sum(pool.name %in% PDtree$tip.label) != length(pool.name))
+      stop("Data and tree tip label contain unmatched species", call. = FALSE)
+  }
+  
+  if (diversity == "FD") {
+    
+    if (is.null(rownames(FDdistM)))
+      stop('The species names are not provided in distance matrix.', call. = FALSE)
+    
+    if( is.null(pool.name) )
+      stop("Row names of data must be the species names that match row names in distance matrix and thus can not be empty.", call. = FALSE)
+    
+    if (sum(pool.name %in% rownames(FDdistM)) != length(pool.name))
+      stop("Data and distance matrix contain unmatched species", call. = FALSE)
+  }
+  ##
   
   
   if (is.null(conf)) conf = 0.95
@@ -250,8 +327,10 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
       
       pool.name = names(pool.data[pool.data>0])
       tip = PDtree$tip.label[-match(pool.name, PDtree$tip.label)]
-      mytree = drop.tip(PDtree, tip)
-      H_max = get.rooted.tree.height(mytree)
+      mytree = ape::drop.tip(PDtree, tip)
+      
+      # H_max = get.rooted.tree.height(mytree)
+      H_max = max(ape::node.depth.edgelength(mytree))
       
       if(is.null(PDreftime)) { reft = H_max
       } else if (PDreftime <= 0) { stop("Reference time must be greater than 0. Use NULL to set it to pooled tree height.", call. = FALSE)
@@ -383,7 +462,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
           
           cbind(gamma, alpha, beta, C, U, V, S) %>% as.matrix
           
-        }) %>% abind(along = 3) %>% apply(1:2, sd)
+        }, future.seed = TRUE) %>% abind(along = 3) %>% apply(1:2, sd)
         
       } else {
         
@@ -743,7 +822,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
           
           cbind(gamma, alpha, beta, C, U, V, S) %>% as.matrix
           
-        }) %>% abind(along = 3) %>% apply(1:2, sd)
+        }, future.seed = TRUE) %>% abind(along = 3) %>% apply(1:2, sd)
         
       } else {
         
@@ -1111,7 +1190,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
           cbind(gamma, alpha, beta, C, U, V, S) %>% as.matrix
           
           # }, simplify = "array") %>% apply(., 1:2, sd) %>% data.frame
-        }) %>% abind(along = 3) %>% apply(1:2, sd)
+        }, future.seed = TRUE) %>% abind(along = 3) %>% apply(1:2, sd)
         
       } else {
         
@@ -1182,6 +1261,41 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
                              Dataset = dataset_name,
                              Diversity = index) %>% select(c("Dataset", "Order.q", "Size", "Value", "s.e.", "LCL", "UCL", "Diversity"))
     
+    
+    if (diversity == "PD") {
+      
+      gamma = gamma %>% mutate(Reftime = reft)
+      
+      alpha = alpha %>% mutate(Reftime = reft)
+      
+      beta  = beta  %>% mutate(Reftime = reft)
+      
+      C     =  C    %>% mutate(Reftime = reft)
+      
+      U     =  U    %>% mutate(Reftime = reft)
+      
+      V     =  V    %>% mutate(Reftime = reft)
+      
+      S     =  S    %>% mutate(Reftime = reft)
+    }
+    
+    if (diversity == "FD" & FDtype == "tau_value") {
+      
+      gamma = gamma %>% mutate(Tau = FDtau)
+      
+      alpha = alpha %>% mutate(Tau = FDtau)
+      
+      beta  = beta  %>% mutate(Tau = FDtau)
+      
+      C     =  C    %>% mutate(Tau = FDtau)
+      
+      U     =  U    %>% mutate(Tau = FDtau)
+      
+      V     =  V    %>% mutate(Tau = FDtau)
+      
+      S     =  S    %>% mutate(Tau = FDtau)
+    }
+    
     rbind(gamma, alpha, beta, C, U, V, S) %>% cbind(., Type = rep(c('gamma', 'alpha', 'beta', '1-C', '1-U', '1-V', '1-S'), each = length(q)))
     
   }
@@ -1208,7 +1322,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
 #' @examples
 #' ## Taxonomic diversity for abundance data
 #' data(beetle_abu)
-#' output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 20)
+#' output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 10)
 #' 
 #' ggObsbeta3D(output1, type = 'B')
 #' ggObsbeta3D(output1, type = 'D')
@@ -1217,7 +1331,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
 #' ## Phylogenetic Hill numbers for abundance data
 #' data(beetle_abu)
 #' data(beetle_tree)
-#' output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 20, conf = 0.95, 
+#' output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 10, conf = 0.95, 
 #'                     PDtree = beetle_tree, PDreftime = NULL, PDtype = 'meanPD')
 #' 
 #' ggObsbeta3D(output2, type = 'B')
@@ -1227,7 +1341,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
 #' ## Functional diversity for abundance data under single threshold
 #' data(beetle_abu)
 #' data(beetle_distM)
-#' output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 20, conf = 0.95, 
+#' output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
 #'                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 #' 
 #' ggObsbeta3D(output3, type = 'B')
@@ -1246,7 +1360,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
 #' 
 #' ## Taxonomic diversity for incidence data
 #' data(beetle_inc)
-#' output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 20, conf = 0.95)
+#' output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 10, conf = 0.95)
 #' 
 #' ggObsbeta3D(output5, type = 'B')
 #' ggObsbeta3D(output5, type = 'D')
@@ -1255,7 +1369,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
 #' ## Phylogenetic Hill numbers for incidence data
 #' data(beetle_inc)
 #' data(beetle_tree)
-#' output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 0, conf = 0.95, 
+#' output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
 #'                     PDtree = beetle_tree, PDreftime = NULL)
 #' 
 #' ggObsbeta3D(output6, type = 'B')
@@ -1265,7 +1379,7 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
 #' ## Functional diversity for incidence data under single threshold
 #' data(beetle_inc)
 #' data(beetle_distM)
-#' output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 20, conf = 0.95, 
+#' output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
 #'                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 #'
 #' ggObsbeta3D(output7, type = 'B')

@@ -26,30 +26,30 @@ Obsbeta3D(
 
 \item{diversity}{selection of diversity type: \code{'TD'} = Taxonomic diversity, \code{'PD'} = Phylogenetic diversity, and \code{'FD'} = Functional diversity.}
 
-\item{q}{a numerical vector specifying the diversity orders. Default is \code{q = c(0, 1, 2)}.}
+\item{q}{a numerical vector specifying the diversity orders. Default is \code{c(0, 1, 2)}.}
 
-\item{datatype}{data type of input data: individual-based abundance data (\code{datatype = "abundance"}) or species by sampling-units incidence matrix (\code{datatype = "incidence_raw"}) with all entries being \code{0} (non-detection) or \code{1} (detection).}
+\item{datatype}{data type of input data: individual-based abundance data (\code{datatype = "abundance"}) or species by sampling-units incidence/occurrence matrix (\code{datatype = "incidence_raw"}) with all entries being 0 (non-detection) or 1 (detection).}
 
-\item{nboot}{a positive integer specifying the number of bootstrap replications when assessing sampling uncertainty and constructing confidence intervals. Bootstrap replications are generally time consuming. Enter \code{0} to skip the bootstrap procedures. Default is \code{nboot = 10}. If more accurate results are required, set \code{nboot = 100} (or \code{200}).}
+\item{nboot}{a positive integer specifying the number of bootstrap replications when assessing sampling uncertainty and constructing confidence intervals. Bootstrap replications are generally time consuming. Set \code{nboot = 0} to skip the bootstrap procedures. Default is \code{nboot = 10}. If more accurate results are required, set \code{nboot = 100} (or \code{nboot = 200}).}
 
-\item{conf}{a positive number < 1 specifying the level of confidence interval. Default is \code{conf = 0.95}.}
+\item{conf}{a positive number < 1 specifying the level of confidence interval. Default is 0.95.}
 
-\item{PDtree}{(required argument for \code{diversity = "PD"}), a phylogenetic tree in Newick format for all observed species in the pooled dataset.}
+\item{PDtree}{(required argument for \code{diversity = "PD"}), a phylogenetic tree in Newick format for all observed species in the pooled assemblage.}
 
-\item{PDreftime}{(argument for \code{diversity = "PD"}), a numerical value specifying reference time for PD. Default is \code{PDreftime = NULL} (i.e., the age of the root of PDtree).}
+\item{PDreftime}{(argument only for \code{diversity = "PD"}), a numerical value specifying reference time for PD. Default is \code{PDreftime = NULL} (i.e., the age of the root of \code{PDtree}).}
 
-\item{PDtype}{(argument for \code{diversity = "PD"}), select PD type: \code{PDtype = "PD"} (effective total branch length) or \code{PDtype = "meanPD"} (effective number of equally divergent lineages). Default is \code{PDtype = "meanPD"}, where \code{meanPD = PD/tree depth}.}
+\item{PDtype}{(argument only for \code{diversity = "PD"}), select PD type: \code{PDtype = "PD"} (effective total branch length) or \code{PDtype = "meanPD"} (effective number of equally divergent lineages). Default is \code{PDtype = "meanPD"}, where \code{meanPD = PD/tree depth}.}
 
 \item{FDdistM}{(required argument for \code{diversity = "FD"}), a species pairwise distance matrix for all species in the pooled dataset.}
 
-\item{FDtype}{(argument for \code{diversity = "FD"}), select FD type: \code{FDtype = "tau_value"} for FD under a specified threshold value, or \code{FDtype = "AUC"} (area under the curve of tau-profile) for an overall FD which integrates all threshold values between zero and one. Default is \code{FDtype = "AUC"}.}
+\item{FDtype}{(argument only for \code{diversity = "FD"}), select FD type: \code{FDtype = "tau_value"} for FD under a specified threshold value, or \code{FDtype = "AUC"} (area under the curve of tau-profile) for an overall FD which integrates all threshold values between zero and one. Default is \code{FDtype = "AUC"}.}
 
-\item{FDtau}{(argument for \code{diversity = "FD"} and \code{FDtype = "tau_value"}), a numerical value between 0 and
+\item{FDtau}{(argument only for \code{diversity = "FD"} and \code{FDtype = "tau_value"}), a numerical value between 0 and
 1 specifying the tau value (threshold level) that will be used to compute FD. If \code{FDtype = NULL} (default), 
 then threshold level is set to be the mean distance between any two individuals randomly selected from the pooled 
 dataset (i.e., quadratic entropy).}
 
-\item{FDcut_number}{(argument for \code{diversity = "FD"} and \code{FDtype = "AUC"}), a numeric number to cut [0, 1] interval into equal-spaced sub-intervals to obtain the AUC value by integrating the tau-profile. Equivalently, the number of tau values that will be considered to compute the integrated AUC value. Default is \code{FDcut_number = 30}. A larger value can be set to obtain more accurate AUC value.}
+\item{FDcut_number}{(argument only for \code{diversity = "FD"} and \code{FDtype = "AUC"}), a numeric number to cut [0, 1] interval into equal-spaced sub-intervals to obtain the AUC value by integrating the tau-profile. Equivalently, the number of tau values that will be considered to compute the integrated AUC value. Default is \code{FDcut_number = 30}. A larger value can be set to obtain more accurate AUC value.}
 }
 \value{
 Return a list of several data frames including three diversity (gamma, alpha, and beta
@@ -59,11 +59,13 @@ Return a list of several data frames including three diversity (gamma, alpha, an
  \item{Dataset}{the name of dataset.}
  \item{Order.q}{the diversity order of q.} 
  \item{Size}{the sample size.}
- \item{Value}{the gamma, alpha, beta diversity and dissimilarity value.}
+ \item{Value}{the observed gamma, alpha, beta diversity and dissimilarity value.}
  \item{s.e.}{standard error of standardized estimate.}
  \item{LCL, UCL}{the bootstrap lower and upper confidence limits for the diversity/dissimilarity with a default significance level of 0.95.}
  \item{Diversity}{'TD' = 'Taxonomic diversity', 'PD' = 'Phylogenetic diversity', 'meanPD' = 'Mean phylogenetic diversity', 'FD_tau' = 'Functional diversity (given tau)', 'FD_AUC' = 'Functional diversity (AUC)'}
- \item{Type}{gamma, alpha, beta diversity or dissimilarity measures.}
+ \item{Type}{gamma, alpha, beta diversity or dissimilarity measures.}  
+ \item{Reftime}{the reference time for PD.}
+ \item{Tau}{the threshold of functional distinctiveness between any two species for FD (under \code{FDtype = "tau_value"}).}
 }
 \description{
 \code{Obsbeta3D}: compute observed 3D alpha, beta, gamma diversity as well as dissimilarity indices.
@@ -71,14 +73,14 @@ Return a list of several data frames including three diversity (gamma, alpha, an
 \examples{
 ## Taxonomic diversity for abundance data
 data(beetle_abu)
-output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 20, conf = 0.95)
+output1 = Obsbeta3D(data = beetle_abu, diversity = 'TD', datatype = 'abundance', nboot = 10, conf = 0.95)
 output1
 
 
 ## Phylogenetic diversity for abundance data
 data(beetle_abu)
 data(beetle_tree)
-output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 20, conf = 0.95,
+output2 = Obsbeta3D(data = beetle_abu, diversity = 'PD', datatype = 'abundance', nboot = 10, conf = 0.95,
                     PDtree = beetle_tree, PDreftime = NULL)
 output2
 
@@ -86,7 +88,7 @@ output2
 ## Functional diversity for abundance data under single threshold
 data(beetle_abu)
 data(beetle_distM)
-output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 20, conf = 0.95, 
+output3 = Obsbeta3D(data = beetle_abu, diversity = 'FD', datatype = 'abundance', nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 output3
 
@@ -101,14 +103,14 @@ output4
 
 ## Taxonomic diversity for incidence data
 data(beetle_inc)
-output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 20, conf = 0.95)
+output5 = Obsbeta3D(data = beetle_inc, diversity = 'TD', datatype = 'incidence_raw', nboot = 10, conf = 0.95)
 output5
 
 
 ## Phylogenetic diversity for incidence data
 data(beetle_inc)
 data(beetle_tree)
-output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 20, conf = 0.95, 
+output6 = Obsbeta3D(data = beetle_inc, diversity = 'PD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
                     PDtree = beetle_tree, PDreftime = NULL, PDtype = 'PD')
 output6
 
@@ -116,7 +118,7 @@ output6
 ## Functional diversity for incidence data under single threshold
 data(beetle_inc)
 data(beetle_distM)
-output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 20, conf = 0.95, 
+output7 = Obsbeta3D(data = beetle_inc, diversity = 'FD', datatype = 'incidence_raw', nboot = 10, conf = 0.95, 
                     FDdistM = beetle_distM, FDtype = 'tau_value', FDtau = NULL)
 output7
 
