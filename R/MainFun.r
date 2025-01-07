@@ -946,6 +946,10 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
         
         if (datatype == 'abundance') {
           
+          FDdistM = FDdistM[rownames(FDdistM) %in% rownames(data), colnames(FDdistM) %in% rownames(data)]
+          order_sp <- match(rownames(data),rownames(FDdistM))
+          FDdistM <- FDdistM[order_sp,order_sp]
+          
           output = FD_by_tau(data, FDdistM, FDtau, datatype = 'abundance')
           gamma = output$gamma
           alpha = output$alpha
@@ -960,6 +964,10 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
         }
         
         if (datatype == 'incidence_raw') {
+          
+          FDdistM = FDdistM[rownames(FDdistM) %in% names(data_gamma_freq)[-1], colnames(FDdistM) %in% names(data_gamma_freq)[-1]]
+          order_sp <- match(names(data_gamma_freq)[-1],rownames(FDdistM))
+          FDdistM <- FDdistM[order_sp,order_sp]
           
           output = FD_by_tau(list(data_gamma_freq = data_gamma_freq, data_2D = data_2D), FDdistM, FDtau, datatype='incidence_raw')
           gamma = output$gamma
@@ -982,6 +990,10 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
         width = diff(cut)
         
         if (datatype == 'abundance') {
+          
+          FDdistM = FDdistM[rownames(FDdistM) %in% rownames(data), colnames(FDdistM) %in% rownames(data)]
+          order_sp <- match(rownames(data),rownames(FDdistM))
+          FDdistM <- FDdistM[order_sp,order_sp]
           
           gamma_alpha_over_tau = lapply(cut, function(tau) {
             
@@ -1019,6 +1031,10 @@ Obsbeta3D = function(data, diversity = 'TD', q = seq(0, 2, 0.25), datatype = 'ab
         }
         
         if (datatype == 'incidence_raw') {
+          
+          FDdistM = FDdistM[rownames(FDdistM) %in% names(data_gamma_freq)[-1], colnames(FDdistM) %in% names(data_gamma_freq)[-1]]
+          order_sp <- match(names(data_gamma_freq)[-1],rownames(FDdistM))
+          FDdistM <- FDdistM[order_sp,order_sp]
           
           gamma_alpha_over_tau = lapply(cut, function(tau) {
             
